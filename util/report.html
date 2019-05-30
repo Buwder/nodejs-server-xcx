@@ -1,0 +1,184 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> 脑功能评估报告</title>
+    <script src="https://img.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/highcharts.js"></script>
+    <script type="text/javascript" src="/highcharts-3d.js"></script>
+    <style>
+        div{width: 600px;margin: 0 auto}
+        .image{width: 100%;height: 250px}
+        table{width: 100%}
+        table tr td{border: 1px solid #ddd;height: 30px;text-align: center;line-height: 30px}
+        .module3-text,.module4-text{line-height: 30px}
+        .tit{background: #eaea80}
+      </style>
+  </head>
+  <body>
+    <div class="module1">
+        <h2> 脑功能评估报告<button id="btns" onclick="prints()" style="float: right;">打印</button></h2>
+        <h3>一.数据报表</h3>
+        <table cellspacing="0" cellpadding="0" border="0">
+          <tr>
+            <td class="tit" colspan="6">基本信息</td>
+          </tr>
+          <tr>
+            <td>姓名</td>
+            <td><%=info.username%></td>
+            <td>性别</td>
+            <td><%=info.sex%></td>
+            <td>年龄</td>
+            <td><%=info.age%></td>
+          </tr>
+          <tr>
+            <td>训练项目</td>
+            <td>综合训练</td>
+            <td>训练时长</td>
+            <td><%=info.module1.testtime%>秒</td>
+            <td>训练得分</td>
+            <td><%=info.module1.testscore%></td>
+          </tr>
+          <tr>
+            <td>记录日期</td>
+            <td colspan="5"><%=info.module1.recordate%></td>
+          </tr>
+          <tr>
+            <td>开始时间</td>
+            <td colspan="2"><%=info.module1.startime%></td>
+            <td>结束时间</td>
+            <td colspan="2"><%=info.module1.endtime%></td>
+          </tr>
+          <tr>
+            <td class="tit" colspan="6">训练指数</td>
+          </tr>
+          <tr>
+              <td>训练项目</td>
+              <td>综合训练</td>
+              <td>专注指数</td>
+              <td><%=info.module1.zzdafraid%></td>
+              <td>放松指数</td>
+              <td><%=info.module1.fsdafraid%></td>
+          </tr>
+          <tr>
+            <td class="tit" colspan="6">训练参数</td>
+          </tr>
+          <tr>
+              <td></td>
+              <td>平均值</td>
+              <td>最高值</td>
+              <td>最低值</td>
+              <td>标准差</td>
+              <td>差异系数</td>
+          </tr>
+          <tr>
+            <td>专注度</td>
+            <td><%=info.module1.zzdafraid%></td>
+            <td><%=info.module1.zzdmax%></td>
+            <td><%=info.module1.zzdmin%></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>放松度</td>
+            <td><%=info.module1.fsdafraid%></td>
+            <td><%=info.module1.fsdmax%></td>
+            <td><%=info.module1.fsdmin%></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="tit" colspan="6">数据统计</td>
+          </tr>
+          <tr>
+            <td>数值范围</td>
+            <td>程度</td>
+            <td colspan="2">专注度统计数据</td>
+            <td colspan="2">放松度统计数据</td>
+          </tr>
+          <tr>
+            <td>1-19</td>
+            <td>很低</td>
+            <td colspan="2"><%=info.module1.zzdscore.zzdscore1%></td>
+            <td colspan="2"><%=info.module1.fsdscore.fsdscor1%></td>
+          </tr>
+          <tr>
+              <td>20-39</td>
+              <td>较低</td>
+              <td colspan="2"><%=info.module1.zzdscore.zzdscore2%></td>
+              <td colspan="2"><%=info.module1.fsdscore.fsdscore2%></td>
+          </tr>
+          <tr>
+              <td>40-59</td>
+              <td>一般</td>
+              <td colspan="2"><%=info.module1.zzdscore.zzdscore3%></td>
+            <td colspan="2"><%=info.module1.fsdscore.fsdscore3%></td>
+          </tr>
+          <tr>
+              <td>60-79</td>
+              <td>较高</td>
+              <td colspan="2"><%=info.module1.zzdscore.zzdscore4%></td>
+              <td colspan="2"><%=info.module1.fsdscore.fsdscore4%></td>
+          </tr>
+          <tr>
+              <td>80-100</td>
+              <td>很高</td>
+              <td colspan="2"><%=info.module1.zzdscore.zzdscore5%></td>
+              <td colspan="2"><%=info.module1.fsdscore.fsdscore5%></td>
+          </tr>          
+        </table>
+    </div>
+    <div class="module2">
+      <h3>二.图表</h3>
+      <!--专注度区间分布图-->
+      <div class="zdfqjfbt image" zskx-data="" id="zdfqjfbt"></div>
+      <!--放松度区间分布图 -->
+      <div class="fsdqjfbt image" zskx-data="" id="fsdqjfbt"></div>
+      <!--专注度曲线 -->
+      <div class="zzdqx image" zskx-data="" id="zzdqx"></div>
+      <!--放松度曲线 --> 
+      <div class="fsdqx image" zskx-data="" id="fsdqx"></div>
+      <!--专注度数值分布 --> 
+      <div class="zzdszfb image" zskx-data="" id="zzdszfb" style="display: none"></div>
+      <!--放松度数值分布 --> 
+      <div class="fsdszfb image" zskx-data="" id="fsdszfb" style="display: none"></div>
+      <!--EEG曲线 --> 
+      <div class="eegqx image" zskx-data="" id="eegqx"></div>
+      <!--EEG 能量谱 --> 
+      <div class="eegnlp image" zskx-data="" id="eegnlp"></div>
+      <!--EEG 相对能量谱 --> 
+      <div class="eegxdnlp image" zskx-data="" id="eegxdnlp" style="display: none"></div>
+    </div>
+    <div class="module3">
+      <h3>三.复合评价</h3>
+      <div class="module3-text">
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本测试项目的类型为“综合训练”，测试时间为：<%=info.module1.testtime%>秒。在此次测试中，您的得分为：<%=info.module1.testscore%>分</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次测试中，您的专注度指数为：<%=info.module1.zzdafraid%>；专注度平均值为：<%=info.module1.zzdafraid%>；专注度最高值为：<%=info.module1.zzdmax%>；专注度最低值为：<%=info.module1.zzdmin%>；专注度水平处于“很高”、“较高”、“一般”、“较低”、“很低”状态下的时间分别是“<%=info.module1.zzdscore.zzdscore1%>”、“<%=info.module1.zzdscore.zzdscore2%>”、“<%=info.module1.zzdscore.zzdscore3%>”、“<%=info.module1.zzdscore.zzdscore4%>”、“<%=info.module1.zzdscore.zzdscore5%>”。</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次测试中，您的放松度指数为：<%=info.module1.fsdafraid%>；放松度平均值为：<%=info.module1.fsdafraid%>；放松度最高值为：<%=info.module1.fsdmax%>；放松度最低值为：<%=info.module1.fsdmin%>；放松度水平处于“很高”、“较高”、“一般”、“较低”、“很低”状态下的时间分别是“<%=info.module1.fsdscore.fsdscor1%>”、“<%=info.module1.fsdscore.fsdscore2%>”、“<%=info.module1.fsdscore.fsdscore3%>”、“<%=info.module1.fsdscore.fsdscore4%>”、“<%=info.module1.fsdscore.fsdscore5%>”。</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您在本次综合训练中自我调节和控制能力较好，但仍有很大提升空间。</p>
+      </div>
+    </div>
+    <div class="module4">
+      <h3>四.术语简介</h3>
+      <div class="module4-text">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“专注度”指使用者在训练过程中的“专注程度”或“专心程度”，该参数反映了使用者当前的注意力集中程度。心烦意乱、精神恍惚、精力分散以及焦虑等精神状态都将降低专注度参数的数值。</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“放松度”指使用者在训练过程中的“平静程度”或者“放松程度”。放松度反映的是使用者的精神状态，而不是身体状态，所以，简单地进行全身肌肉放松并不能快速地提高放松度水平。然而，对大多数人来说，在正常的环境下，进行身体放松通常有助于精神状态的放松。放松度水平的提高与大脑活动的减少有明显的关联。长期观察结果表明：闭上眼睛可以使得大脑无需处理通过眼睛看到的景象从而降低大脑精神活动水平。所以，闭上眼睛通常是提高放松度值的有效方法。心烦意乱、精神恍惚、焦虑、激动不安等精神状态以及感官刺激等都将降低放松度参数的数值。</p>  
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“专注度”和“放松度”参数均以1到100之间的具体数值来指示用户的专注度水平和放松度水平。数值在40和60之间表示此刻该项参数的值处于中间范围。数值在60—79之间表示此刻该项参数的值处于“较高值区”，也就是说略高于正常水平。数值在80—100之间表示处于“高值区”，它表示你的专注度或放松度达到了非常高的水平，即处于非常专注的状态或者是非常放松的状态。数值在20—39之间则表示此时该项参数的值处于“较低值区”，数值在1—19则意味着处于“低值区”。</p>
+      </div>
+    </div>
+    <script src="/index.js"></script>
+    <script>
+      var prints = function(){
+        document.getElementById("btns").style.display="none"
+        window.print();
+      }
+    </script>
+    <script>
+      var data = <%-JSON.stringify(info)%>;
+      var arr = <%-JSON.stringify(data)%>;   
+      //arr = arr.splice(1,arr.length-1);
+      console.log(data);
+ </script>
+  </body>
+  </html>

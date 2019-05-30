@@ -1,0 +1,18 @@
+﻿/*数据库配置*/
+exports.mysqlConfig={
+    host:'',
+    user:'root',
+    password:'123456',
+    database:'',
+    port:3306
+}
+/*其他配置*/
+exports.otherConfig={
+    host:'',
+    port:''
+}
+/*退出页面配置*/
+exports.loginOutConfig={
+    user:'',
+    coumg:""
+}

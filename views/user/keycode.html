@@ -1,0 +1,126 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>生成医院二维码</title>
+    <script src="/test/jquery-1.9.1.min.js"></script>
+    <style>
+        html,body{width:100%;height: 100%;max-width: 100%;margin: 0;padding: 0;background: #90bac7;color:#fff;}
+        ul,li,ol{list-style: none;line-height: 30px;}
+        button{width: 100px;height: 30px;border:none;background: green;color:#fff;border-radius: 5px;cursor: pointer;}
+        input{margin-left: 10px;display: block;margin: 10px 0}
+    </style>
+</head>
+<body>
+    <div>
+        <ul>
+            <li style="display:none">获取到小程序token为:<%=JSON.parse(xcxtoken).access_token%> </li>
+            <li style="display:none">有效期为:<%=JSON.parse(xcxtoken).expires_in%>秒</li>
+            <p style="color: red;font-weight: bold">生成机构二维码</p>
+            <li>请输入医院简称:<input type="text" onfocusout="checktestcenter(this.value)" id="testcentername" val=''/></li>
+            <li></li>
+            <li style="display:none">
+                请输入要生成小程序码的参数:</br>
+                医院简称:<input type="text" disabled value="" id="testcenternames" /></br>
+                扫码后跳转的地址:<input type="text" value="pages/login/login" />*切勿随意修改</br>
+                二维码宽度:<input type="text" value="430" id="codewidth" /></br>
+                <button onclick="generate()">确定生成</button>
+            </li>
+            <li id="keycodebar"></li>
+        </ul>
+        <p style="color: red;font-weight: bold;margin-top: 100px;padding-left: 40px">上传机构卡正反面背景<br />例如:医院简称为test 正面就为 test_1.jpg 反面就为test_2.jpg</p>
+        <form id="form" action="/test/user/upload" method="post" enctype="multipart/form-data" style="padding-left: 40px">
+            <p>医院制卡正反面上传(JPG格式)</p>
+            <label>
+                正面:<input type="file" onchange="viewImg(this)" name="thumbnailon" accept="image/jpeg,image/png">
+                <img style='width:200px;height: 100px;display:none' src=''>
+            </label>
+            <label>
+                反面:<input type="file" onchange="viewImg(this)" name="thumbnailon" accept="image/jpeg,image/png">
+                <img style='width:200px;height: 100px;display:none' src=''>
+            </label>
+            <a href="javascript:login();" style="display: block;color: #333;background: ">确认上传</a>
+            <p style="width: 200px;display:inline-block">正面示例:<img src="/test/images/card_1.png" style="width:200px;height: 100px"/></p>
+            <p style="width: 200px;display:inline-block">反面示例:<img src="/test/images/card_2.png" style="width:200px;height: 100px"/></p>
+          </form>
+    </div>
+    <script>
+        var testcentername = $("#testcentername").val();
+        var logosrc = "";
+        var checktestcenter = function (testcentername){
+            $.ajax({
+                type:'get',
+                url:'/test/user/checktestcenter',
+                data:{'testcenter':testcentername},
+                success:function(res){
+                    console.log(res);
+                    if(res.data == '-1'){
+                        $("li:eq(3)").html('机构信息查询失败!');
+                        $("li:eq(4)").hide();
+                    }else{
+                        $("li:eq(3)").html(
+                            '机构名称为:'+res.data.test_center_name+
+                            '<br/>机构简称为:'+res.data.brief_name+
+                            '<br/>机构logo为:<img id="keycode" src="http://img.pems.cn/'+res.data.manage_pf_login_logo+'">'
+                        );
+                        logosrc = res.data.manage_pf_login_logo;
+                        $("#testcenternames").val(res.data.brief_name);
+                        $("li:eq(4)").show(500);
+                    }
+                }
+            })
+        }
+        var generate = function(){
+            $.ajax({
+                type:'get',
+                url:'/test/user/postcode',
+                dataType:'json',
+                data:{
+                    'urls':'https://api.weixin.qq.com/wxa/getwxacode?access_token=<%-JSON.parse(xcxtoken).access_token%>',
+                    'path':'pages/login/login?scene='+$("#keycode").attr("src") + '&name='+$("#testcenternames").val(),
+                    'width':$("#codewidth").val(),
+                    'testcenter':$("#testcenternames").val()
+                },
+                success:function(res){
+                    if(res.code == "0"){
+                        var attrsrc = function(){
+                            $("#keycodebar").html("<img src=https://xcx.pems.cn/test/images/keycode/"+ $("#testcenternames").val()+".png />")
+                        }
+                        setTimeout(attrsrc,1000)
+                    }
+                },
+                error:function(err){
+                    console.log(err)
+                }
+            })
+        }
+        
+        var viewImg = function(e){
+            var file = e.files[0];  
+            if(window.FileReader) {  
+                var fr = new FileReader();  
+                fr.readAsDataURL(file);  
+                fr.onloadend = function(obj) {  
+                    $(e).parent().find("img").attr("src",obj.target.result);
+                    $(e).parent().find("img").css("display","block")
+                };  
+            }else{
+                alert("你的浏览器不支持图片预览，请更换谷歌浏览器进行!")
+            }  
+        }
+
+        var login = function(){
+          if($("input[name=thumbnailon]:eq(0)").val() == ""){
+                alert("请选择要上传的正面图片");
+                return
+            }else if($("input[name=thumbnailon]:eq(1)").val() == ""){
+                alert("请选择要上传的反面图片")
+                return
+            }else{
+                $("#form").submit();
+            }
+        }
+    </script>
+</body>
+</html>

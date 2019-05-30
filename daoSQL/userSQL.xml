@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<sql>
+    <userInfoSelf>
+	SELECT
+		t.id,
+		t.removed,
+		t.completed,
+		t.test_center_id,
+		t1.brief_name,
+		t1.test_center_name,
+        t.status
+        FROM
+            user_info_t t
+        LEFT JOIN test_center_info_t t1 ON t.test_center_id = t1.id
+        WHERE
+            t.removed = 'N'
+        AND t.login_name = '{%=loginName%}'
+        AND t. PASSWORD = '{%=password%}'
+    UNION  
+            SELECT
+            t.id,
+            t.removed,
+            t.completed,
+            t.test_center_id,
+            t1.brief_name,
+	    t1.test_center_name,
+        t.status
+        FROM
+            user_info_t t
+        LEFT JOIN test_center_info_t t1 ON t.test_center_id = t1.id
+        WHERE
+            t.removed = 'N'
+        AND t.login_name = '{%=loginName%}'
+        AND t.new_password = MD5('{%=password%}')
+    </userInfoSelf>
+    <userinfos>
+        SELECT
+        t.question_id,t1.title,t1.description,t.test_status,t.visible,t.id
+        FROM
+            user_test_items_t t
+        LEFT JOIN test_question_t t1 ON t.question_id = t1.id
+        WHERE
+            t.user_id = '{%=userid%}' AND t.removed = 'N'
+    </userinfos>
+    <usermemberinfo>
+        SELECT t.*,t1.test_center_name FROM user_info_t t LEFT JOIN test_center_info_t t1 ON t.test_center_id = t1.id WHERE t.id='{%=userid%}';
+    </usermemberinfo>
+    <savememberinfos>
+        update user_info_t set 
+        phone_number='{%=usernumber%}',
+	
+        
+        user_name='{%=username%}',
+        age='{%=userage%}',
+        education_type='{%=userEducation%}',
+        income ='{%=userEnumIncome%}',
+        marriage ='{%=usermarriage%}',
+        sex ='{%=usersex%}',
+	completed = 'Y'
+        where login_name='{%=loginname%}'
+	AND test_center_id ='{%=test_center_id%}'
+    </savememberinfos>
+	<savememberinfo>
+        update user_info_t set
+        phone_number='{%=usernumber%}',
+        password=null,
+        new_password = MD5('{%=password%}'),
+        user_name='{%=username%}',
+        age='{%=userage%}',
+        education_type='{%=userEducation%}',
+        income ='{%=userEnumIncome%}',
+        marriage ='{%=usermarriage%}',
+        sex ='{%=usersex%}',
+        completed = 'Y'
+        where login_name='{%=loginname%}'
+        AND test_center_id ='{%=test_center_id%}'
+    </savememberinfo>
+
+    <packlist>
+        SELECT * FROM intervention_package_info_t
+    </packlist>
+    <packlistdetail>
+        SELECT
+            *
+        FROM
+            intervention_package_detail_t t
+        LEFT JOIN resource_intervention_t t1 ON t.intervention_id = t1.id
+        LEFT JOIN resource_intervention_catalog_t t2 ON t2.id = t1.catalog_id
+        WHERE
+            t.package_id = '{%=packageid%}'
+        AND t2.resource_type = '{%=type%}'
+    </packlistdetail>
+    <searchitems>
+        SELECT
+        *
+        FROM
+            user_test_items_t t
+        LEFT JOIN card.question_t t1 ON t.question_id = t1.id
+        WHERE
+            t.id = '{%=itemid%}'
+        ORDER BY t1.version DESC LIMIT 1
+    </searchitems>
+    <questioninfo>
+        SELECT
+        *
+        FROM
+            user_test_items_t t
+        LEFT JOIN card.question_t t1 ON t.question_id = t1.id
+        WHERE
+            t.id = '{%=itemid%}'
+        AND t1.version = t.version
+    </questioninfo>
+    <saveanswer>
+        UPDATE user_test_items_t
+        SET test_status = 'TESTED',
+        test_at = NOW(),
+        visible = 'N',
+        warning = 'Y',
+        answer = '{%-testAnswer%}',
+        genescore = '{%-testGs%}',
+        warn = 'Y',
+        version = '{%=version%}',
+        intervene = 'N'
+        WHERE
+            question_id = '{%=testQuestionId%}'
+        AND removed = 'N'
+        AND test_status = 'INIT'
+        AND id = '{%-testItemId%}'
+    </saveanswer>
+    <checktestcentername>
+        SELECT * FROM test_center_info_t WHERE brief_name='{%=testcenter%}'
+    </checktestcentername>
+</sql>
